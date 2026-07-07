@@ -8,6 +8,8 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
        AWADDR, AWCACHE, AWPROT, AWVALID : in STD_LOGIC; -- Line 8,9 are Write Address Channel
        AWREADY : out STD_LOGIC; 
        WDATA, WSTRB : in STD_LOGIC; -- Write Data Channel
+       BRESP, BVALID : out STD_LOGIC; -- Write Response Channel
+       BREADY : in STD_LOGIC;
 
 
 )
