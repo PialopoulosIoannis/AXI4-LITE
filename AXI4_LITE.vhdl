@@ -5,9 +5,11 @@ entity AXI4_LITE_RAM is
 PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
        ARADDR, ARCACHE, ARPROT, ARVALID : in STD_LOGIC; -- Line 6, 7 Read Address Channel
        ARREADY : out STD_LOGIC;
-       RDATA, RRESP, RVALID, RREADY : out STD_LOGIC; -- Line 8, 9 Read Data Channel
+       RDATA, RVALID, RREADY : out STD_LOGIC; -- Line 8, 9, 10 Read Data Channel
+       RRESP : out std_logic_vector(1 downto 0);
        RREADY : in STD_LOGIC;
-       AWADDR, AWCACHE, AWPROT, AWVALID : in STD_LOGIC; -- Line 10, 11 are Write Address Channel
+       AWCACHE, AWPROT, AWVALID : in STD_LOGIC; -- Line 10, 11,12 are Write Address Channel
+       AWADDR : in std_logic_vector(31 downto 0);
        AWREADY : out STD_LOGIC; 
        WDATA, WSTRB : in STD_LOGIC; -- Write Data Channel
        BRESP, BVALID : out STD_LOGIC; -- Line 13, 14 Write Response Channel
@@ -17,7 +19,7 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
 end AXI4_LITE_RAM;
 
 architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZEI POSI MNHMH THA EXO. PROFANOS DEN MPORO NA BALO APERIORISTI. 
--- RIGHT NOW I HAVE 320 BITS SO 320/8=40 BYTES OF MEMORY. BECAUSE EACH DATA IS 32 BITS = 4 BYTES. SO I HAVE 10 REGISTERS OF 32 BITS EACH. 
+-- RIGHT NOW I HAVE 320 BITS SO 320/8=40 BYTES OF MEMORY. BECAUSE EACH DATA IS 32 BITS = 4 BYTES. SO I CAN DEFINE 10 REGISTERS OF 32 BITS EACH. 
   signal register00 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register       
   signal register01 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
   signal register02 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
@@ -47,6 +49,27 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                      if ARVALID = '1' and RREADY = '1' then
                             ARREADY <= '1';
                      if ARREADY = '1' and ARVALID = '1' then
-                            --I can get the address inside ARADDR and put the data inside RDATA. HOW
-                            
+                            case ARADDR(5 downto 2) is
+                                   when "0000" => RDATA <= register00;
+                                   when "0001" => RDATA <= register01;
+                                   when "0010" => RDATA <= register02;
+                                   when "0011" => RDATA <= register03;
+                                   when "0100" => RDATA <= register04;
+                                   when "0101" => RDATA <= register05;
+                                   when "0110" => RDATA <= register06;
+                                   when "0111" => RDATA <= register07;
+                                   when "1000" => RDATA <= register08;
+                                   when "1001" => RDATA <= register09;
+                                   when others => RDATA <= (others => '0');
+                            end case;
+                            ARREADY <= '0'; -- We deassert ARREADY and ARVALID because the read address handshake is complete. 
+                            ARVALID <= '0';
+                            RVALID <= '1'; -- We assert RVALID because the read data is now available.
+                            RRESP <= "00"; -- We set RRESP to "00" to indicate a successful read operation, OKEY status
+                            end if;       
+                     end if;
+                     if RREADY = '1' and RVALID = '1' then
+                            RVALID <= '0'; -- We deassert RVALID because the read data handshake is complete.
+                            RREADY <= '0'; -- We deassert RREADY because the read data handshake is complete.
+                     end if;
 
