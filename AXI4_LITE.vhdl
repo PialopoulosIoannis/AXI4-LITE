@@ -16,7 +16,19 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
 
 end AXI4_LITE_RAM;
 
-architecture Behavioral_arch_1 of AXI4_LITE_RAM is
+architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is
+-- RIGHT NOW I HAVE 320 BITS SO 320/8=40 BYTES OF MEMORY. BECAUSE EACH DATA IS 32 BITS = 4 BYTES. SO I HAVE 10 REGISTERS OF 32 BITS EACH. 
+  signal register00 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register       
+  signal register01 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register02 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register03 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register04 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register05 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register06 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register07 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register08 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+  signal register09 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
+
        process(ARESETN, ACLK)
        begin
               if ARESETN = '0' then
