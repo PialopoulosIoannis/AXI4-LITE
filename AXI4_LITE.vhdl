@@ -12,6 +12,22 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
        WDATA, WSTRB : in STD_LOGIC; -- Write Data Channel
        BRESP, BVALID : out STD_LOGIC; -- Line 13, 14 Write Response Channel
        BREADY : in STD_LOGIC;
-
-
 )
+
+end AXI4_LITE_RAM;
+
+architecture Behavioral_arch_1 of AXI4_LITE_RAM is
+       process(ARESETN, ACLK)
+       begin
+              if ARESETN = '0' then
+                   if   rising_edge(ACLK) then -- The reset signal can be asserted asynchronously, but deassertion must be synchronous with a rising
+                            RVALID <= '0'; --MUST BE 0
+                            BVALID <= '0'; --MUST BE 0
+                            ARREADY <= '1'; --Can be anything
+                            AWREADY <= '1'; --Can be anything
+                            RDATA <= (others => '0'); --MUST BE 0 (32bits)
+                            RRESP <= (others => '0'); --MUST BE 0 (2bits)    
+                            RVALID <= '0'; --MUST BE 0
+                            RREADY <= '0'; --MUST BE 0
+                            BRESP <= (others => '0'); --MUST BE 0 (2bits) 
+                   end if;         
