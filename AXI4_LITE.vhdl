@@ -16,7 +16,7 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
 
 end AXI4_LITE_RAM;
 
-architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is
+architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZEI POSI MNHMH THA EXO. PROFANOS DEN MPORO NA BALO APERIORISTI. 
 -- RIGHT NOW I HAVE 320 BITS SO 320/8=40 BYTES OF MEMORY. BECAUSE EACH DATA IS 32 BITS = 4 BYTES. SO I HAVE 10 REGISTERS OF 32 BITS EACH. 
   signal register00 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register       
   signal register01 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
@@ -37,11 +37,11 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is
                             BVALID <= '0'; --MUST BE 0
                             ARREADY <= '1'; --Can be anything
                             AWREADY <= '1'; --Can be anything
-                            RDATA <= (others => '0'); --MUST BE 0 (32bits)
-                            RRESP <= (others => '0'); --MUST BE 0 (2bits)    
-                            RVALID <= '0'; --MUST BE 0
-                            RREADY <= '0'; --MUST BE 0
-                            BRESP <= (others => '0'); --MUST BE 0 (2bits) 
+                            RDATA <= (others => '1'); --Can be anything (32bits)
+                            RRESP <= (others => '1'); --Can be anything (2bits)    
+                            RVALID <= '1'; --Can be anything
+                            RREADY <= '1'; --Can be anything
+                            BRESP <= (others => '1'); --Can be anything (2bits) 
                    end if;  
               elsif rising_edge(ACLK) then
                      if ARVALID = '1' and RREADY = '1' then
