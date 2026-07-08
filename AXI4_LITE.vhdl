@@ -30,4 +30,11 @@ architecture Behavioral_arch_1 of AXI4_LITE_RAM is
                             RVALID <= '0'; --MUST BE 0
                             RREADY <= '0'; --MUST BE 0
                             BRESP <= (others => '0'); --MUST BE 0 (2bits) 
-                   end if;         
+                   end if;  
+              elsif rising_edge(ACLK) then
+                     if ARVALID = '1' and RREADY = '1' then
+                            ARREADY <= '1';
+                     if ARREADY = '1' and ARVALID = '1' then
+                            --I can get the address inside ARADDR and put the data inside RDATA. HOW
+                            
+
