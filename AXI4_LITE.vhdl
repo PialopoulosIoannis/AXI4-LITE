@@ -5,7 +5,8 @@ entity AXI4_LITE_RAM is
 PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
        ARADDR, ARCACHE, ARPROT, ARVALID : in STD_LOGIC; -- Line 6, 7 Read Address Channel
        ARREADY : out STD_LOGIC;
-       RDATA, RVALID, RREADY : out STD_LOGIC; -- Line 8, 9, 10 Read Data Channel
+       RVALID, RREADY : out STD_LOGIC; -- Line 8, 9, 10, 11 Read Data Channel
+       RDATA : out std_logic_vector(31 downto 0); 
        RRESP : out std_logic_vector(1 downto 0);
        RREADY : in STD_LOGIC;
        AWCACHE, AWPROT, AWVALID : in STD_LOGIC; -- Line 10, 11,12 are Write Address Channel
