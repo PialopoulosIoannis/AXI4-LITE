@@ -37,22 +37,26 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
   signal register08 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
   signal register09 : std_logic_vector(31 downto 0) := (others => '0'); -- 32 bits register
 
+  signal internal_arready : std_logic := '0'; -- Internal signal to track ARREADY state
+  signal internal_rvalid : std_logic := '0'; -- Internal signal to track RVALID state
+  begin 
        process(ARESETN, ACLK)
        begin
               if ARESETN = '0' then
                    if   rising_edge(ACLK) then -- The reset signal can be asserted asynchronously, but deassertion must be synchronous with a rising
-                            RVALID <= '0'; --MUST BE 0
+                            internal_rvalid <= '0'; --MUST BE 0
                             BVALID <= '0'; --MUST BE 0
-                            ARREADY <= '1'; --Can be anything
+                            internal_arready <= '1'; --Can be anything
                             AWREADY <= '1'; --Can be anything
                             RDATA <= (others => '1'); --Can be anything (32bits)
                             RRESP <= (others => '1'); --Can be anything (2bits)    
                             BRESP <= (others => '1'); --Can be anything (2bits) 
-                   end if;  
+                   end if;
+              end if;       
               elsif rising_edge(ACLK) then
                      if ARVALID = '1' and RREADY = '1' then
-                            ARREADY <= '1';
-                     if ARREADY = '1' and ARVALID = '1' then
+                            internal_arready <= '1';
+                     if internal_arready = '1' and ARVALID = '1' then
                             case ARADDR(5 downto 2) is
                                    when "0000" => RDATA <= register00;
                                    when "0001" => RDATA <= register01;
@@ -66,17 +70,17 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                                    when "1001" => RDATA <= register09;
                                    when others => RDATA <= (others => '0');
                             end case;
-                            ARREADY <= '0'; -- We deassert ARREADY and ARVALID because the read address handshake is complete. 
-                            ARVALID <= '0';
-                            RVALID <= '1'; -- We assert RVALID because the read data is now available.
+                            internal_arready <= '0'; -- We deassert internal_arready and ARVALID because the read address handshake is complete. 
+                            internal_rvalid <= '1'; -- We assert RVALID because the read data is now available.
                             RRESP <= "00"; -- We set RRESP to "00" to indicate a successful read operation, OKEY status
                             end if;       
                      end if;
-                     if RREADY = '1' and RVALID = '1' then
-                            RVALID <= '0'; -- We deassert RVALID because the read data handshake is complete.
-                            RREADY <= '0'; -- We deassert RREADY because the read data handshake is complete.
+                     if RREADY = '1' and internal_rvalid = '1' then
+                            internal_rvalid <= '0'; -- We deassert RVALID because the read data handshake is complete.
                      end if;
                      end process;
+                     ARREADY <= internal_arready; -- We assign the internal_arready signal to the ARREADY output port.
+                     RVALID <= internal_rvalid; -- We assign the internal_rvalid signal to the RVALID output port.
                      end Behavioral_arch_1_with_320bits; 
-                     
+
 
