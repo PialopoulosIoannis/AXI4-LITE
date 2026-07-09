@@ -20,7 +20,7 @@ PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
        BVALID : out STD_LOGIC; -- Write Response Channel
        BRESP: out std_logic_vector(1 downto 0);
        BREADY : in STD_LOGIC
-)
+);
 
 end AXI4_LITE_RAM;
 
@@ -51,11 +51,11 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                             RDATA <= (others => '1'); --Can be anything (32bits)
                             RRESP <= (others => '1'); --Can be anything (2bits)    
                             BRESP <= (others => '1'); --Can be anything (2bits) 
-                   end if;
-              end if;       
+                   end if;      
               elsif rising_edge(ACLK) then
                      if ARVALID = '1' and RREADY = '1' then
                             internal_arready <= '1';
+                     end if; 
                      if internal_arready = '1' and ARVALID = '1' then
                             case ARADDR(5 downto 2) is
                                    when "0000" => RDATA <= register00;
@@ -73,8 +73,8 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                             internal_arready <= '0'; -- We deassert internal_arready and ARVALID because the read address handshake is complete. 
                             internal_rvalid <= '1'; -- We assert RVALID because the read data is now available.
                             RRESP <= "00"; -- We set RRESP to "00" to indicate a successful read operation, OKEY status
-                            end if;       
-                     end if;
+                     end if;       
+              end if;
                      if RREADY = '1' and internal_rvalid = '1' then
                             internal_rvalid <= '0'; -- We deassert RVALID because the read data handshake is complete.
                      end if;
