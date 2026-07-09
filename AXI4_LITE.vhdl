@@ -3,18 +3,23 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity AXI4_LITE_RAM is 
 PORT ( ACLK, ARESETN : in STD_LOGIC;  -- clock and reset
-       ARADDR, ARCACHE, ARPROT, ARVALID : in STD_LOGIC; -- Line 6, 7 Read Address Channel
+       ARCACHE, ARVALID : in STD_LOGIC; -- Read Address Channel
+       ARPROT: in std_logic_vector(2 downto 0);
+       ARADDR : in std_logic_vector(31 downto 0);
        ARREADY : out STD_LOGIC;
-       RVALID, RREADY : out STD_LOGIC; -- Line 8, 9, 10, 11 Read Data Channel
+       RVALID : out STD_LOGIC; --Read Data Channel
        RDATA : out std_logic_vector(31 downto 0); 
        RRESP : out std_logic_vector(1 downto 0);
        RREADY : in STD_LOGIC;
-       AWCACHE, AWPROT, AWVALID : in STD_LOGIC; -- Line 10, 11,12 are Write Address Channel
+       AWCACHE, AWVALID : in STD_LOGIC; -- Write Address Channel
+       AWPROT: in std_logic_vector(2 downto 0);
        AWADDR : in std_logic_vector(31 downto 0);
        AWREADY : out STD_LOGIC; 
-       WDATA, WSTRB : in STD_LOGIC; -- Write Data Channel
-       BRESP, BVALID : out STD_LOGIC; -- Line 13, 14 Write Response Channel
-       BREADY : in STD_LOGIC;
+       WSTRB : in STD_LOGIC; -- Write Data Channel
+       WDATA : in std_logic_vector(31 downto 0);
+       BVALID : out STD_LOGIC; -- Write Response Channel
+       BRESP: out std_logic_vector(1 downto 0);
+       BREADY : in STD_LOGIC
 )
 
 end AXI4_LITE_RAM;
@@ -42,8 +47,6 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                             AWREADY <= '1'; --Can be anything
                             RDATA <= (others => '1'); --Can be anything (32bits)
                             RRESP <= (others => '1'); --Can be anything (2bits)    
-                            RVALID <= '1'; --Can be anything
-                            RREADY <= '1'; --Can be anything
                             BRESP <= (others => '1'); --Can be anything (2bits) 
                    end if;  
               elsif rising_edge(ACLK) then
