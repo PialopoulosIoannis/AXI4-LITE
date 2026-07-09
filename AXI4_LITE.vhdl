@@ -76,4 +76,7 @@ architecture Behavioral_arch_1_with_320bits of AXI4_LITE_RAM is --POIOS KATHORIZ
                             RVALID <= '0'; -- We deassert RVALID because the read data handshake is complete.
                             RREADY <= '0'; -- We deassert RREADY because the read data handshake is complete.
                      end if;
+                     end process;
+                     end Behavioral_arch_1_with_320bits; 
+                     
 
