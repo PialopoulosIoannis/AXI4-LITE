@@ -53,9 +53,9 @@ architecture behavioral_arch_1_with_320bits of axi4_lite_ram is
   signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
 begin 
 
-  process(aresetn, aclk)
+  process(areset_n, aclk)
   begin
-    if aresetn = '0' then
+    if areset_n = '0' then
       if rising_edge(aclk) then 
         internal_rvalid  <= '0'; 
         s_axilt_bvalid   <= '0'; 
