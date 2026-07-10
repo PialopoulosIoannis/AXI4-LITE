@@ -38,16 +38,16 @@ end axi4_lite_ram;
 
 architecture behavioral_arch_1_with_320bits of axi4_lite_ram is 
   -- Memory registers (10 registers of 32 bits each = 320 bits)
-  signal register00 : std_logic_vector(31 downto 0) := (others => '0');       
-  signal register01 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register02 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register03 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register04 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register05 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register06 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register07 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register08 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal register09 : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal register00 : std_logic_vector(31 downto 0) := x"DEAD1111"; 
+  signal register01 : std_logic_vector(31 downto 0) := x"DEAD2222"; 
+  signal register02 : std_logic_vector(31 downto 0) := x"DEAD3333";  
+  signal register03 : std_logic_vector(31 downto 0) := x"DEAD4444"; 
+  signal register04 : std_logic_vector(31 downto 0) := x"DEAD5555"; 
+  signal register05 : std_logic_vector(31 downto 0) := x"DEAD6666"; 
+  signal register06 : std_logic_vector(31 downto 0) := x"DEAD7777"; 
+  signal register07 : std_logic_vector(31 downto 0) := x"DEAD8888"; 
+  signal register08 : std_logic_vector(31 downto 0) := x"DEAD9999"; 
+  signal register09 : std_logic_vector(31 downto 0) := x"DEADAAAA"; 
 
   signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
   signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
