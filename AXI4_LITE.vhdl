@@ -1,26 +1,39 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity axi4_lite_ram is 
-port ( aclk, aresetn : in std_logic;  -- clock and reset
-       s_axilt_arcache, s_axilt_arvalid : in std_logic; -- Read Address Channel
-       s_axilt_arprot: in std_logic_vector(2 downto 0);
-       s_axilt_araddr : in std_logic_vector(31 downto 0);
-       s_axilt_arready : out std_logic;
-       s_axilt_rvalid : out std_logic; --Read Data Channel
-       s_axilt_rdata : out std_logic_vector(31 downto 0); 
-       s_axilt_rresp : out std_logic_vector(1 downto 0);
-       s_axilt_rready : in std_logic;
-       s_axilt_awcache, s_axilt_awvalid : in std_logic; -- Write Address Channel
-       s_axilt_awprot: in std_logic_vector(2 downto 0);
-       s_axilt_awaddr : in std_logic_vector(31 downto 0);
-       s_axilt_awready : out std_logic; 
-       s_axilt_wstrb : in std_logic; -- Write Data Channel
-       s_axilt_wdata : in std_logic_vector(31 downto 0);
-       s_axilt_bvalid : out std_logic; -- Write Response Channel
-       s_axilt_bresp: out std_logic_vector(1 downto 0);
-       s_axilt_bready : in std_logic
-);
+entity axi4_lite_ram is
+    generic (
+        DATA_WIDTH : INTEGER := 32;
+        ADDR_WIDTH : INTEGER := 10
+    );
+    port (
+        aclk            : in    STD_LOGIC;
+        areset_n        : in    STD_LOGIC;
+        
+        s_axilt_awaddr  : in    STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
+        s_axilt_awvalid : in    STD_LOGIC;
+        s_axilt_awready : out   STD_LOGIC;
+
+        s_axilt_wdata   : in    STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
+        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((DATA_WIDTH/8)-1 downto 0);
+        s_axilt_wvalid  : in    STD_LOGIC;
+        s_axilt_wready  : out   STD_LOGIC;
+
+        s_axilt_bresp   : out   STD_LOGIC_VECTOR(1 downto 0);
+        s_axilt_bvalid  : out   STD_LOGIC;
+        s_axilt_bready  : in    STD_LOGIC;
+
+        s_axilt_araddr  : in    STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
+        s_axilt_arvalid : in    STD_LOGIC;
+        s_axilt_arready : out   STD_LOGIC;
+
+        s_axilt_rdata   : out   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
+        s_axilt_rresp   : out   STD_LOGIC_VECTOR(1 downto 0);
+        s_axilt_rvalid  : out   STD_LOGIC;
+        s_axilt_rready  : in    STD_LOGIC;
+
+        irq_trig        : out   STD_LOGIC
+    );
 end axi4_lite_ram;
 
 architecture behavioral_arch_1_with_320bits of axi4_lite_ram is 
