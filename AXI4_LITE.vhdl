@@ -91,6 +91,7 @@ begin
             internal_arready <= '1';
           end if;
       end if; 
+    end if;
   end process;
 
   s_axilt_arready <= internal_arready; 
