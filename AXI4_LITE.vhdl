@@ -55,17 +55,16 @@ begin
 
   process(areset_n, aclk)
   begin
-    if areset_n = '0' then
-      if rising_edge(aclk) then 
+    if areset_n = '0' then 
         internal_rvalid  <= '0'; 
         s_axilt_bvalid   <= '0'; 
         internal_arready <= '1'; 
         s_axilt_awready  <= '1'; 
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
-        s_axilt_bresp    <= (others => '1'); 
-      end if;      
+        s_axilt_bresp    <= (others => '1');      
     elsif rising_edge(aclk) then
+      if areset_n = '1' then
       if s_axilt_arvalid = '1' and s_axilt_rready = '1' then
         internal_arready <= '1';
       end if; 
