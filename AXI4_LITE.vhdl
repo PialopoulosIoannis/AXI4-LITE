@@ -53,6 +53,8 @@ architecture behavioral_arch_1_with_320bits of axi4_lite_ram is
   signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
   signal internal_awready : std_logic := '0'; -- Internal signal to track awready state
   signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
+  signal temp_waddr : STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
+  signal temp_wdata : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
 
 
 begin 
@@ -112,32 +114,40 @@ begin
    
     if rising_edge(aclk) then
         if areset_n = '1' then
-            if s_axilt_awvalid = '1' and s_axilt_wvalid = '1' and s_axilt_bready = '1' then
-                if internal_awready = '1' and internal_wready = '1' then
-                    case s_axilt_awaddr(5 downto 2) is
-                        when "0000" =>  register00 <= s_axilt_wdata;
-                        when "0001" =>  register01 <= s_axilt_wdata;
-                        when "0010" =>  register02 <= s_axilt_wdata;
-                        when "0011" =>  register03 <= s_axilt_wdata;
-                        when "0100" =>  register04 <= s_axilt_wdata;
-                        when "0101" =>  register05 <= s_axilt_wdata;
-                        when "0110" =>  register06 <= s_axilt_wdata;
-                        when "0111" =>  register07 <= s_axilt_wdata;
-                        when "1000" =>  register08 <= s_axilt_wdata;
-                        when "1001" =>  register09 <= s_axilt_wdata;
+            if s_axilt_awvalid = '1' and internal_awready = '1' then
+              temp_waddr <= s_axilt_awaddr;
+              if s_axilt_wvalid = '1' and internal_wready = '1' then
+                temp_wdata <= s_axilt_wdata;
+                if s_axilt_bready = '1' then
+                  if internal_awready = '1' and internal_wready = '1' then --DEN XREIAZETAI KAN
+                    case temp_waddr (5 downto 2) is
+                        when "0000" =>  register00 <= temp_wdata;
+                        when "0001" =>  register01 <= temp_wdata;
+                        when "0010" =>  register02 <= temp_wdata;
+                        when "0011" =>  register03 <= temp_wdata;
+                        when "0100" =>  register04 <= temp_wdata;
+                        when "0101" =>  register05 <= temp_wdata;
+                        when "0110" =>  register06 <= temp_wdata;
+                        when "0111" =>  register07 <= temp_wdata;
+                        when "1000" =>  register08 <= temp_wdata;
+                        when "1001" =>  register09 <= temp_wdata;
                         when others =>  register00 <= (others => '0');
                      end case;  
                    internal_awready <= '0';
                    internal_wready <= '0';
                    s_axilt_bvalid <= '00'; --OK response
-                elsif    
-                      internal_awready <= '1';
-                      internal_wready <= '1';
-                 end if;       
+                  end if;
+                end if;
+              elsif internal_wready = '1';
               end if;
-            end if;
-           end if;   
-         end process;  
+            elsif internal_awready = '1';
+             end if;
+          end if;
+    end if;
+
+                      
+            
+  end process;  
 
 
 
