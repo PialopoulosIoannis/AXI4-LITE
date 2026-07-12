@@ -62,36 +62,41 @@ begin
         s_axilt_awready  <= '1'; 
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
-        s_axilt_bresp    <= (others => '1');      
-    elsif rising_edge(aclk) then
-      if areset_n = '1' then
-      if s_axilt_arvalid = '1' and s_axilt_rready = '1' then
-        internal_arready <= '1';
+        s_axilt_bresp    <= (others => '1');  
+    end  if;
+
+     if rising_edge(aclk) then
+        if areset_n = '1' then
+          if s_axilt_arvalid = '1' and s_axilt_rready = '1' then
+            internal_arready <= '1';
+          end if; 
+        
+       
+      
+          if internal_arready = '1' and s_axilt_arvalid = '1' then
+             case s_axilt_araddr(5 downto 2) is
+                when "0000" => s_axilt_rdata <= register00;
+                when "0001" => s_axilt_rdata <= register01;
+                when "0010" => s_axilt_rdata <= register02;
+                when "0011" => s_axilt_rdata <= register03;
+                when "0100" => s_axilt_rdata <= register04;
+                when "0101" => s_axilt_rdata <= register05;
+                when "0110" => s_axilt_rdata <= register06;
+                when "0111" => s_axilt_rdata <= register07;
+                when "1000" => s_axilt_rdata <= register08;
+                when "1001" => s_axilt_rdata <= register09;
+                when others => s_axilt_rdata <= (others => '0');
+              end case;
+             internal_arready <= '0'; 
+             internal_rvalid  <= '1'; 
+             s_axilt_rresp    <= "00"; 
+           end if;       
+      
+          if s_axilt_rready = '1' and internal_rvalid = '1' then
+            internal_rvalid <= '0'; 
+          end if;
+        end if;
       end if; 
-      
-      if internal_arready = '1' and s_axilt_arvalid = '1' then
-        case s_axilt_araddr(5 downto 2) is
-          when "0000" => s_axilt_rdata <= register00;
-          when "0001" => s_axilt_rdata <= register01;
-          when "0010" => s_axilt_rdata <= register02;
-          when "0011" => s_axilt_rdata <= register03;
-          when "0100" => s_axilt_rdata <= register04;
-          when "0101" => s_axilt_rdata <= register05;
-          when "0110" => s_axilt_rdata <= register06;
-          when "0111" => s_axilt_rdata <= register07;
-          when "1000" => s_axilt_rdata <= register08;
-          when "1001" => s_axilt_rdata <= register09;
-          when others => s_axilt_rdata <= (others => '0');
-        end case;
-        internal_arready <= '0'; 
-        internal_rvalid  <= '1'; 
-        s_axilt_rresp    <= "00"; 
-      end if;       
-      
-      if s_axilt_rready = '1' and internal_rvalid = '1' then
-        internal_rvalid <= '0'; 
-      end if;
-    end if;
   end process;
 
   s_axilt_arready <= internal_arready; 
