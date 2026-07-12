@@ -67,12 +67,6 @@ begin
 
      if rising_edge(aclk) then
         if areset_n = '1' then
-          if s_axilt_arvalid = '1' and s_axilt_rready = '1' then
-            internal_arready <= '1';
-          end if; 
-        
-       
-      
           if internal_arready = '1' and s_axilt_arvalid = '1' then
              case s_axilt_araddr(5 downto 2) is
                 when "0000" => s_axilt_rdata <= register00;
@@ -94,6 +88,9 @@ begin
       
           if s_axilt_rready = '1' and internal_rvalid = '1' then
             internal_rvalid <= '0'; 
+          end if;
+          if internal_rvalid = '1' and s_axilt_rready = '1' then
+            internal_arready <= '1';
           end if;
         end if;
       end if; 
