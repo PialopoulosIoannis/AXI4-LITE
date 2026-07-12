@@ -112,7 +112,7 @@ begin
    
     if rising_edge(aclk) then
         if areset_n = '1' then
-            if s_axilt_awvalid = '1' and s_axilt_wvalid = '1' then
+            if s_axilt_awvalid = '1' and s_axilt_wvalid = '1' and s_axilt_bready = '1' then
                 if internal_awready = '1' and internal_wready = '1' then
                     case s_axilt_awaddr(5 downto 2) is
                         when "0000" =>  register00 <= s_axilt_wdata;
@@ -132,7 +132,7 @@ begin
                    s_axilt_bvalid <= '00'; --OK response
                 elsif    
                       internal_awready <= '1';
-                   internal_wready <= '1';
+                      internal_wready <= '1';
                  end if;       
               end if;
             end if;
