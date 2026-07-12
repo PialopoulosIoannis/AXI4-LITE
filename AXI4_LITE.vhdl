@@ -115,19 +115,29 @@ begin
             if s_axilt_awvalid = '1' and s_axilt_wvalid = '1' then
                 if internal_awready = '1' and internal_wready = '1' then
                     case s_axilt_awaddr(5 downto 2) is
-                        when "0000" =>  register00 <= s_axilt_rdata;
-                        when "0001" =>  register01 <= s_axilt_rdata;
-                        when "0010" =>  register02 <= s_axilt_rdata;
-                        when "0011" =>  register03 <= s_axilt_rdata;
-                        when "0100" =>  register04 <= s_axilt_rdata;
-                        when "0101" =>  register05 <= s_axilt_rdata;
-                        when "0110" =>  register06 <= s_axilt_rdata;
-                        when "0111" =>  register07 <= s_axilt_rdata;
-                        when "1000" =>  register08 <= s_axilt_rdata;
-                        when "1001" =>  register09 <= s_axilt_rdata;
+                        when "0000" =>  register00 <= s_axilt_wdata;
+                        when "0001" =>  register01 <= s_axilt_wdata;
+                        when "0010" =>  register02 <= s_axilt_wdata;
+                        when "0011" =>  register03 <= s_axilt_wdata;
+                        when "0100" =>  register04 <= s_axilt_wdata;
+                        when "0101" =>  register05 <= s_axilt_wdata;
+                        when "0110" =>  register06 <= s_axilt_wdata;
+                        when "0111" =>  register07 <= s_axilt_wdata;
+                        when "1000" =>  register08 <= s_axilt_wdata;
+                        when "1001" =>  register09 <= s_axilt_wdata;
                         when others =>  register00 <= (others => '0');
-                      end case;   
-          
+                     end case;  
+                   internal_awready <= '0';
+                   internal_wready <= '0';
+                   s_axilt_bvalid <= '00'; --OK response
+                elsif    
+                      internal_awready <= '1';
+                   internal_wready <= '1';
+                 end if;       
+              end if;
+            end if;
+           end if;   
+         end process;  
 
 
 
