@@ -51,11 +51,15 @@ architecture behavioral_arch_1_with_320bits of axi4_lite_ram is
 
   signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
   signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
+  signal internal_awready : std_logic := '0'; -- Internal signal to track awready state
+  signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
+
+
 begin 
 
   process(areset_n, aclk)
   begin
-    if areset_n = '0' then 
+    if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
         s_axilt_bvalid   <= '0'; 
         internal_arready <= '1'; 
@@ -94,7 +98,43 @@ begin
     end if;
   end process;
 
+process(aclk, areset_n)
+begin
+   if areset_n = '0' then --reset
+        internal_rvalid  <= '0'; 
+        s_axilt_bvalid   <= '0'; 
+        internal_arready <= '1'; 
+        s_axilt_awready  <= '1'; 
+        s_axilt_rdata    <= (others => '1'); 
+        s_axilt_rresp    <= (others => '1');     
+        s_axilt_bresp    <= (others => '1');  
+    end  if;
+   
+    if rising_edge(aclk) then
+        if areset_n = '1' then
+            if s_axilt_awvalid = '1' and s_axilt_wvalid = '1' then
+                if internal_awready = '1' and internal_wready = '1' then
+                    case s_axilt_awaddr(5 downto 2) is
+                        when "0000" =>  register00 <= s_axilt_rdata;
+                        when "0001" =>  register01 <= s_axilt_rdata;
+                        when "0010" =>  register02 <= s_axilt_rdata;
+                        when "0011" =>  register03 <= s_axilt_rdata;
+                        when "0100" =>  register04 <= s_axilt_rdata;
+                        when "0101" =>  register05 <= s_axilt_rdata;
+                        when "0110" =>  register06 <= s_axilt_rdata;
+                        when "0111" =>  register07 <= s_axilt_rdata;
+                        when "1000" =>  register08 <= s_axilt_rdata;
+                        when "1001" =>  register09 <= s_axilt_rdata;
+                        when others =>  register00 <= (others => '0');
+                      end case;   
+          
+
+
+
   s_axilt_arready <= internal_arready; 
   s_axilt_rvalid  <= internal_rvalid; 
+  s_axilt_awready <= internal_awready;
+  s_axilt_wready <= internal_wready;
+
 
 end behavioral_arch_1_with_320bits;
