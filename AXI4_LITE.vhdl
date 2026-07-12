@@ -88,11 +88,8 @@ begin
       
           if s_axilt_rready = '1' and internal_rvalid = '1' then
             internal_rvalid <= '0'; 
-          end if;
-          if internal_rvalid = '1' and s_axilt_rready = '1' then
             internal_arready <= '1';
           end if;
-        end if;
       end if; 
   end process;
 
