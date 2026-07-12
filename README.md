@@ -23,7 +23,7 @@ Some note about them:
 If you perform the behavioural simulation, it should look like this: 
 <img width="1538" height="698" alt="image" src="https://github.com/user-attachments/assets/d550fdcc-6444-41c4-b1c2-1f52af63b332" />
 
-**Make sure yoy match the addresses that are written in the VHDL file to Vivado address window.
+**Make sure yoy match the addresses that are written in the VHDL file to Vivado address window**
 
 
 
