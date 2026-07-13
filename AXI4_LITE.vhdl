@@ -57,6 +57,7 @@ architecture behavioral_arch_1_with_320bits of axi4_lite_ram is
   signal temp_wdata : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
   signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
   signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
+  signal internal_bvalid : std_logic := '0'; -- Internal signal to track bvalid state
 
 
 begin 
@@ -65,11 +66,9 @@ begin
   begin
     if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
-        s_axilt_bvalid   <= '0'; 
         internal_arready <= '1';  
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
-        s_axilt_bresp    <= (others => '1');  
     end  if;
 
      if rising_edge(aclk) then
@@ -109,6 +108,9 @@ begin
           internal_awready  <= '1';
           internal_address_flag <= '0';
           internal_data_flag <= '0';
+          internal_bvalid <= '0';
+          s_axilt_bresp    <= (others => '1');  
+
   end if;
           
    
@@ -125,7 +127,8 @@ begin
                 internal_data_flag <= '1';
               end if;
                 
-                  if internal_data_flag = '1' and internal_address_flag = '1' then 
+                  if (internal_data_flag = '1' or (s_axilt_awvalid = '1' and internal_awready = '1')) and 
+                    (internal_address_flag = '1' or (s_axilt_wvalid = '1' and internal_wready = '1')) then 
                     case temp_waddr (5 downto 2) is
                         when "0000" =>  register00 <= temp_wdata;
                         when "0001" =>  register01 <= temp_wdata;
@@ -142,7 +145,7 @@ begin
                    internal_address_flag <= '0';
                    internal_data_flag <= '0';
                    internal_bvalid <= '1';
-                   s_axilt_bresp <= '00'; --OK response
+                   s_axilt_bresp <= "00"; --OK response
                   end if;
                 
               if s_axilt_bready = '1' and internal_bvalid = '1' then
