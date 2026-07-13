@@ -1,0 +1,13 @@
+memory_initialization_radix=16;
+memory_initialization_vector=
+DEAD1111,
+DEAD2222,
+DEAD3333,
+DEAD4444,
+DEAD5555,
+DEAD6666,
+DEAD7777,
+DEAD8888,
+DEAD9999,
+DEADAAAA,
+00000000;
