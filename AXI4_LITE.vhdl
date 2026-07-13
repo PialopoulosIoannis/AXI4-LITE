@@ -102,11 +102,15 @@ begin
 
 process(aclk, areset_n) --WRITE
 begin
+
+  if areset_n = '0' then --reset
+          s_axilt_awready  <= '1'; 
+  end if;
+          
    if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
         s_axilt_bvalid   <= '0'; 
         internal_arready <= '1'; 
-        s_axilt_awready  <= '1'; 
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
         s_axilt_bresp    <= (others => '1');  
