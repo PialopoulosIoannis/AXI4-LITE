@@ -124,7 +124,7 @@ begin
                 internal_wready <= '0';
                 internal_data_flag <= '1';
               end if;
-                if s_axilt_bready = '1' then
+                
                   if internal_data_flag = '1' and internal_address_flag = '1' then 
                     case temp_waddr (5 downto 2) is
                         when "0000" =>  register00 <= temp_wdata;
@@ -138,16 +138,18 @@ begin
                         when "1000" =>  register08 <= temp_wdata;
                         when "1001" =>  register09 <= temp_wdata;
                         when others =>  register00 <= (others => '0');
-                     end case;  
-                   internal_awready <= '1';
-                   internal_wready <= '1';
-                   s_axilt_bvalid <= '00'; --OK response
+                     end case;                    
                    internal_address_flag <= '0';
                    internal_data_flag <= '0';
+                   internal_bvalid <= '1';
+                   s_axilt_bresp <= '00'; --OK response
                   end if;
-                end if;
-              
-            
+                
+              if s_axilt_bready = '1' and internal_bvalid = '1' then
+                internal_bvalid <= '0';
+                internal_awready <= '1';
+                internal_wready <= '1'; 
+              end if;
           end if;
     end if;
 
@@ -161,6 +163,7 @@ begin
   s_axilt_rvalid  <= internal_rvalid; 
   s_axilt_awready <= internal_awready;
   s_axilt_wready <= internal_wready;
+  s_axilt_bvalid <= internal_bvalid;
 
 
 end behavioral_arch_1_with_320bits;
