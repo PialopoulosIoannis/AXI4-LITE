@@ -127,8 +127,7 @@ begin
                 internal_data_flag <= '1';
               end if;
                 
-                  if (internal_data_flag = '1' or (s_axilt_awvalid = '1' and internal_awready = '1')) and 
-                    (internal_address_flag = '1' or (s_axilt_wvalid = '1' and internal_wready = '1')) then 
+                  if internal_data_flag = '1' and internal_address_flag = '1' then 
                     case temp_waddr (5 downto 2) is
                         when "0000" =>  register00 <= temp_wdata;
                         when "0001" =>  register01 <= temp_wdata;
@@ -148,7 +147,7 @@ begin
                    s_axilt_bresp <= "00"; --OK response
                   end if;
                 
-              if s_axilt_bready = '1' and internal_bvalid = '1' then
+              if s_axilt_bready = '1' and internal_bvalid = '1'  then
                 internal_bvalid <= '0';
                 internal_awready <= '1';
                 internal_wready <= '1'; 
