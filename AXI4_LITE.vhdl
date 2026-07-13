@@ -55,6 +55,8 @@ architecture behavioral_arch_1_with_320bits of axi4_lite_ram is
   signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
   signal temp_waddr : STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
   signal temp_wdata : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
+  signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
+  signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
 
 
 begin 
@@ -64,8 +66,7 @@ begin
     if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
         s_axilt_bvalid   <= '0'; 
-        internal_arready <= '1'; 
-        s_axilt_awready  <= '1'; 
+        internal_arready <= '1';  
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
         s_axilt_bresp    <= (others => '1');  
@@ -104,26 +105,27 @@ process(aclk, areset_n) --WRITE
 begin
 
   if areset_n = '0' then --reset
-          s_axilt_awready  <= '1'; 
+          internal_wready  <= '1'; 
+          internal_awready  <= '1';
+          internal_address_flag <= '0';
+          internal_data_flag <= '0';
   end if;
           
-   if areset_n = '0' then --reset
-        internal_rvalid  <= '0'; 
-        s_axilt_bvalid   <= '0'; 
-        internal_arready <= '1'; 
-        s_axilt_rdata    <= (others => '1'); 
-        s_axilt_rresp    <= (others => '1');     
-        s_axilt_bresp    <= (others => '1');  
-    end  if;
    
     if rising_edge(aclk) then
         if areset_n = '1' then
             if s_axilt_awvalid = '1' and internal_awready = '1' then
               temp_waddr <= s_axilt_awaddr;
+              internal_awready <= '0';
+              internal_address_flag <= '1';
+            end if;
               if s_axilt_wvalid = '1' and internal_wready = '1' then
                 temp_wdata <= s_axilt_wdata;
+                internal_wready <= '0';
+                internal_data_flag <= '1';
+              end if;
                 if s_axilt_bready = '1' then
-                  if internal_awready = '1' and internal_wready = '1' then --DEN XREIAZETAI KAN
+                  if internal_data_flag = '1' and internal_address_flag = '1' then 
                     case temp_waddr (5 downto 2) is
                         when "0000" =>  register00 <= temp_wdata;
                         when "0001" =>  register01 <= temp_wdata;
@@ -137,15 +139,15 @@ begin
                         when "1001" =>  register09 <= temp_wdata;
                         when others =>  register00 <= (others => '0');
                      end case;  
-                   internal_awready <= '0';
-                   internal_wready <= '0';
+                   internal_awready <= '1';
+                   internal_wready <= '1';
                    s_axilt_bvalid <= '00'; --OK response
+                   internal_address_flag <= '0';
+                   internal_data_flag <= '0';
                   end if;
                 end if;
-              elsif internal_wready = '1';
-              end if;
-            elsif internal_awready = '1';
-             end if;
+              
+            
           end if;
     end if;
 
