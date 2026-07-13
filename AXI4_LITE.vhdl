@@ -89,7 +89,7 @@ begin
               end case;
              internal_arready <= '0'; 
              internal_rvalid  <= '1'; 
-             s_axilt_rresp    <= "00"; 
+             s_axilt_rresp    <= "00"; -- ΟΚ response 
            end if;       
       
           if s_axilt_rready = '1' and internal_rvalid = '1' then
@@ -100,7 +100,7 @@ begin
     end if;
   end process;
 
-process(aclk, areset_n)
+process(aclk, areset_n) --WRITE
 begin
    if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
