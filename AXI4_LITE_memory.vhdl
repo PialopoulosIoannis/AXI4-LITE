@@ -8,6 +8,7 @@ entity axi4_lite_ram is
         ADDR_WIDTH : integer := 10;
         COL_WIDTH : integer := 8;
         NB_COL : integer := 4
+        DATA_WIDTH : integer := NB_COL * COL_WIDTH; -- from above
           );
     port (
         aclk            : in    STD_LOGIC;
@@ -18,7 +19,7 @@ entity axi4_lite_ram is
         s_axilt_awready : out   STD_LOGIC;
 
         s_axilt_wdata   : in    STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
-        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((DATA_WIDTH/8)-1 downto 0);
+        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((DATA_WIDTH/8)-1 downto 0); -- 4 bits we need
         s_axilt_wvalid  : in    STD_LOGIC;
         s_axilt_wready  : out   STD_LOGIC;
 
