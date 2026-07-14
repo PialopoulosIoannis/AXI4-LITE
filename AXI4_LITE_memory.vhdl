@@ -63,6 +63,32 @@ shared variable RAM : ram_type := (others => (others => '0'));
 
 begin 
 
+process(areset_n, aclk)
+  begin
+    if areset_n = '0' then --reset
+        internal_rvalid  <= '0'; 
+        internal_arready <= '1';  
+        s_axilt_rdata    <= (others => '1'); 
+        s_axilt_rresp    <= (others => '1');     
+    end  if;
+
+     if rising_edge(aclk) then
+        if areset_n = '1' then
+          if internal_arready = '1' and s_axilt_arvalid = '1' then
+             s_axilt_rdata <= RAM(conv_integer(s_axilt_araddr(ADDR_WIDTH-1 downto 2))); -- Read data from RAM
+             internal_arready <= '0'; 
+             internal_rvalid  <= '1'; 
+             s_axilt_rresp    <= "00"; -- ΟΚ response 
+           end if;       
+      
+          if s_axilt_rready = '1' and internal_rvalid = '1' then
+            internal_rvalid <= '0'; 
+            internal_arready <= '1';
+          end if;
+      end if; 
+    end if;
+  end process;
+
 process(aclk, areset_n) --Byte Write Enable—True Dual Port READ_FIRST Mode
 begin
 
