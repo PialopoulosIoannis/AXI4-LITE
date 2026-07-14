@@ -93,7 +93,7 @@ begin
             end if;
                 
             if internal_data_flag = '1' and internal_address_flag = '1' then 
-               doa <= RAM(conv_integer(s_axilt_awaddr));
+               doa <= RAM(conv_integer(s_axilt_awaddr(ADDR_WIDTH-1 downto 2))); -- I want to do /4 so I shift the number 2 times right
                 for i in 0 to NB_COL - 1 loop
                   if s_axilt_strb(i) = '1' then
                   RAM(conv_integer(addra))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := dia((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
