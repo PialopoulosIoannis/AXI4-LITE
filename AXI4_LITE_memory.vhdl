@@ -5,10 +5,10 @@ use ieee.std_logic_unsigned.all;
 entity axi4_lite_ram is
     generic(
         SIZE : integer := 1024;
-        ADDR_WIDTH : integer := 10;
+        ADDR_WIDTH : integer := 12;
         COL_WIDTH : integer := 8;
-        NB_COL : integer := 4
-        DATA_WIDTH : integer := NB_COL * COL_WIDTH; -- from above
+        NB_COL : integer := 4;
+        DATA_WIDTH : integer := NB_COL * COL_WIDTH -- from above
           );
     port (
         aclk            : in    STD_LOGIC; 
@@ -57,7 +57,7 @@ shared variable RAM : ram_type := (others => (others => '0'));
   signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
   signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
   signal internal_bvalid : std_logic := '0'; -- Internal signal to track bvalid state
-
+  signal temp_wstrb : STD_LOGIC_VECTOR((DATA_WIDTH/8) -1 downto 0);
 
 begin 
 
@@ -109,14 +109,15 @@ begin
               internal_address_flag <= '1';
             end if;
             if s_axilt_wvalid = '1' and internal_wready = '1' then
-                temp_wdata <= s_axilt_wdat;
+                temp_wdata <= s_axilt_wdata;
+                temp_wstrb <= s_axilt_wstrb;
                 internal_wready <= '0';
                 internal_data_flag <= '1';
             end if;
                 
             if internal_data_flag = '1' and internal_address_flag = '1' then 
                 for i in 0 to NB_COL - 1 loop
-                  if s_axilt_strb(i) = '1' then
+                  if temp_wstrb(i) = '1' then
                   RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2)))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdata((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
                   end if;
                 end loop;                   
