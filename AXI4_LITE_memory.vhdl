@@ -11,8 +11,7 @@ entity axi4_lite_ram is
         DATA_WIDTH : integer := NB_COL * COL_WIDTH; -- from above
           );
     port (
-        aclka            : in    STD_LOGIC; -- CLK for port A
-        aclkb            : in    STD_LOGIC; -- CLK for port B
+        aclk            : in    STD_LOGIC; 
         areset_n        : in    STD_LOGIC;
         
         s_axilt_awaddr  : in    STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
@@ -40,9 +39,7 @@ entity axi4_lite_ram is
 
         irq_trig        : out   STD_LOGIC
 
-        doa : out std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0);
-
-        dob : out std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0)
+        
     );
 end axi4_lite_ram;
 
@@ -52,8 +49,8 @@ type ram_type is array (0 to SIZE - 1) of std_logic_vector(NB_COL * COL_WIDTH - 
 shared variable RAM : ram_type := (others => (others => '0'));
 
 
-  --signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
-  --signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
+  signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
+  signal internal_rvalid  : std_logic := '0'; -- Internal signal to track rvalid state
   signal internal_awready : std_logic := '0'; -- Internal signal to track awready state
   signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
   signal temp_waddr : STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
@@ -80,7 +77,7 @@ begin
   end if;
           
    
-    if rising_edge(aclka) then --PORT A
+    if rising_edge(aclk) then
         if areset_n = '1' then
             if s_axilt_awvalid = '1' and internal_awready = '1' then
               temp_waddrA <= s_axilt_awaddr;
@@ -94,10 +91,9 @@ begin
             end if;
                 
             if internal_data_flag = '1' and internal_address_flag = '1' then 
-               doa <= RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2))); -- I want to do /4 so I shift the number 2 times right
                 for i in 0 to NB_COL - 1 loop
                   if s_axilt_strb(i) = '1' then
-                  RAM(conv_integer(addra))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdataA((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
+                  RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2)))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdataA((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
                   end if;
                 end loop;                   
                 internal_address_flag <= '0';
@@ -120,8 +116,8 @@ begin
 
 
 
-  --s_axilt_arready <= internal_arready; 
-  --s_axilt_rvalid  <= internal_rvalid; 
+  s_axilt_arready <= internal_arready; 
+  s_axilt_rvalid  <= internal_rvalid; 
   s_axilt_awready <= internal_awready;
   s_axilt_wready <= internal_wready;
   s_axilt_bvalid <= internal_bvalid;
