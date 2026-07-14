@@ -18,7 +18,7 @@ entity axi4_lite_ram is
         s_axilt_awready : out   STD_LOGIC;
 
         s_axilt_wdata   : in   STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)-1 downto 0); -- this is dia
-        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)/8-1 downto 0); -- 4 bits we need
+        s_axilt_wstrb   : in    STD_LOGIC_VECTOR(((NB_COL * COL_WIDTH)/8)-1 downto 0); -- 4 bits we need
         s_axilt_wvalid  : in    STD_LOGIC;
         s_axilt_wready  : out   STD_LOGIC;
 
@@ -56,11 +56,11 @@ shared variable RAM : ram_type := (others => (others => '0'));
   signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
   signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
   signal internal_bvalid : std_logic := '0'; -- Internal signal to track bvalid state
-  signal temp_wstrb : STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)/8 -1 downto 0);
+  signal temp_wstrb : STD_LOGIC_VECTOR(((NB_COL * COL_WIDTH)/8)-1 downto 0);
 
 begin 
 
-process(areset_n, aclk)
+process(areset_n, aclk) --READ
   begin
     if areset_n = '0' then --reset
         internal_rvalid  <= '0'; 
