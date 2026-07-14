@@ -7,7 +7,7 @@ entity axi4_lite_ram is
         SIZE : integer := 1024;
         ADDR_WIDTH : integer := 12;
         COL_WIDTH : integer := 8;
-        NB_COL : integer := 4;
+        NB_COL : integer := 4
           );
     port (
         aclk            : in    STD_LOGIC; 
