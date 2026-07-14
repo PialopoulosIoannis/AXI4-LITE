@@ -42,7 +42,8 @@ end axi4_lite_ram;
 
 architecture behavioral_arch_1_with_320bits of axi4_lite_ram is 
   
-
+type ram_type is array (0 to SIZE - 1) of std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0);
+shared variable RAM : ram_type := (others => (others => '0'));
 
 
   signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
