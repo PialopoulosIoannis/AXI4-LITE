@@ -37,6 +37,12 @@ entity axi4_lite_ram is
         s_axilt_rready  : in    STD_LOGIC;
 
         irq_trig        : out   STD_LOGIC
+
+        dia : in std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0); --PORT A
+        doa : out std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0);
+
+        dib : in std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0); --PORT B
+        dob : out std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0)
     );
 end axi4_lite_ram;
 
@@ -73,38 +79,31 @@ begin
   end if;
           
    
-    if rising_edge(aclk) then
+    if rising_edge(aclk) then --PORT A
         if areset_n = '1' then
             if s_axilt_awvalid = '1' and internal_awready = '1' then
               temp_waddr <= s_axilt_awaddr;
               internal_awready <= '0';
               internal_address_flag <= '1';
             end if;
-              if s_axilt_wvalid = '1' and internal_wready = '1' then
+            if s_axilt_wvalid = '1' and internal_wready = '1' then
                 temp_wdata <= s_axilt_wdata;
                 internal_wready <= '0';
                 internal_data_flag <= '1';
-              end if;
+            end if;
                 
-                  if internal_data_flag = '1' and internal_address_flag = '1' then 
-                    case temp_waddr (5 downto 2) is
-                        when "0000" =>  register00 <= temp_wdata;
-                        when "0001" =>  register01 <= temp_wdata;
-                        when "0010" =>  register02 <= temp_wdata;
-                        when "0011" =>  register03 <= temp_wdata;
-                        when "0100" =>  register04 <= temp_wdata;
-                        when "0101" =>  register05 <= temp_wdata;
-                        when "0110" =>  register06 <= temp_wdata;
-                        when "0111" =>  register07 <= temp_wdata;
-                        when "1000" =>  register08 <= temp_wdata;
-                        when "1001" =>  register09 <= temp_wdata;
-                        when others =>  register00 <= (others => '0');
-                     end case;                    
-                   internal_address_flag <= '0';
-                   internal_data_flag <= '0';
-                   internal_bvalid <= '1';
-                   s_axilt_bresp <= "00"; --OK response
+            if internal_data_flag = '1' and internal_address_flag = '1' then 
+               doa <= RAM(conv_integer(s_axilt_awaddr));
+                for i in 0 to NB_COL - 1 loop
+                  if s_axilt_strb(i) = '1' then
+                  RAM(conv_integer(addra))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := dia((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
                   end if;
+                end loop;                   
+                internal_address_flag <= '0';
+                internal_data_flag <= '0';
+                internal_bvalid <= '1';
+                s_axilt_bresp <= "00"; --OK response
+            end if;
                 
               if s_axilt_bready = '1' and internal_bvalid = '1'  then
                 internal_bvalid <= '0';
@@ -120,8 +119,8 @@ begin
 
 
 
-  s_axilt_arready <= internal_arready; 
-  s_axilt_rvalid  <= internal_rvalid; 
+  --s_axilt_arready <= internal_arready; 
+  --s_axilt_rvalid  <= internal_rvalid; 
   s_axilt_awready <= internal_awready;
   s_axilt_wready <= internal_wready;
   s_axilt_bvalid <= internal_bvalid;
