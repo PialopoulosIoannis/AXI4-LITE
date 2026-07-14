@@ -18,8 +18,7 @@ entity axi4_lite_ram is
         s_axilt_awvalid : in    STD_LOGIC;
         s_axilt_awready : out   STD_LOGIC;
 
-        s_axilt_wdataA   : in   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- this is dia
-        s_axilt_wdataB   : in   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- this is dib
+        s_axilt_wdata   : in   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- this is dia
         s_axilt_wstrb   : in    STD_LOGIC_VECTOR((DATA_WIDTH/8)-1 downto 0); -- 4 bits we need
         s_axilt_wvalid  : in    STD_LOGIC;
         s_axilt_wready  : out   STD_LOGIC;
@@ -54,8 +53,7 @@ shared variable RAM : ram_type := (others => (others => '0'));
   signal internal_awready : std_logic := '0'; -- Internal signal to track awready state
   signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
   signal temp_waddr : STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
-  signal temp_wdataA : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- Temporarely store dia
-  signal temp_wdataB : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- Temporarely store dib
+  signal temp_wdata : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); 
   signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
   signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
   signal internal_bvalid : std_logic := '0'; -- Internal signal to track bvalid state
@@ -106,12 +104,12 @@ begin
     if rising_edge(aclk) then
         if areset_n = '1' then
             if s_axilt_awvalid = '1' and internal_awready = '1' then
-              temp_waddrA <= s_axilt_awaddr;
+              temp_waddr <= s_axilt_awaddr;
               internal_awready <= '0';
               internal_address_flag <= '1';
             end if;
             if s_axilt_wvalid = '1' and internal_wready = '1' then
-                temp_wdata <= s_axilt_wdata;
+                temp_wdata <= s_axilt_wdat;
                 internal_wready <= '0';
                 internal_data_flag <= '1';
             end if;
@@ -119,7 +117,7 @@ begin
             if internal_data_flag = '1' and internal_address_flag = '1' then 
                 for i in 0 to NB_COL - 1 loop
                   if s_axilt_strb(i) = '1' then
-                  RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2)))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdataA((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
+                  RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2)))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdata((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
                   end if;
                 end loop;                   
                 internal_address_flag <= '0';
