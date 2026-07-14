@@ -8,7 +8,6 @@ entity axi4_lite_ram is
         ADDR_WIDTH : integer := 12;
         COL_WIDTH : integer := 8;
         NB_COL : integer := 4;
-        DATA_WIDTH : integer := NB_COL * COL_WIDTH -- from above
           );
     port (
         aclk            : in    STD_LOGIC; 
@@ -18,8 +17,8 @@ entity axi4_lite_ram is
         s_axilt_awvalid : in    STD_LOGIC;
         s_axilt_awready : out   STD_LOGIC;
 
-        s_axilt_wdata   : in   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); -- this is dia
-        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((DATA_WIDTH/8)-1 downto 0); -- 4 bits we need
+        s_axilt_wdata   : in   STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)-1 downto 0); -- this is dia
+        s_axilt_wstrb   : in    STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)/8-1 downto 0); -- 4 bits we need
         s_axilt_wvalid  : in    STD_LOGIC;
         s_axilt_wready  : out   STD_LOGIC;
 
@@ -31,7 +30,7 @@ entity axi4_lite_ram is
         s_axilt_arvalid : in    STD_LOGIC;
         s_axilt_arready : out   STD_LOGIC;
 
-        s_axilt_rdata   : out   STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0);
+        s_axilt_rdata   : out   STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)-1 downto 0);
         s_axilt_rresp   : out   STD_LOGIC_VECTOR(1 downto 0);
         s_axilt_rvalid  : out   STD_LOGIC;
         s_axilt_rready  : in    STD_LOGIC;
@@ -53,11 +52,11 @@ shared variable RAM : ram_type := (others => (others => '0'));
   signal internal_awready : std_logic := '0'; -- Internal signal to track awready state
   signal internal_wready : std_logic := '0'; -- Internal signal to track wready state
   signal temp_waddr : STD_LOGIC_VECTOR(ADDR_WIDTH-1 downto 0);
-  signal temp_wdata : STD_LOGIC_VECTOR(DATA_WIDTH-1 downto 0); 
+  signal temp_wdata : STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)-1 downto 0); 
   signal internal_address_flag : std_logic := '0'; -- Internal signal to track address flag
   signal internal_data_flag : std_logic := '0'; -- Internal signal to track data flag
   signal internal_bvalid : std_logic := '0'; -- Internal signal to track bvalid state
-  signal temp_wstrb : STD_LOGIC_VECTOR((DATA_WIDTH/8) -1 downto 0);
+  signal temp_wstrb : STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)/8 -1 downto 0);
 
 begin 
 
