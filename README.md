@@ -1,42 +1,54 @@
 # AXI4-LITE
-## VHDL code for AXI4-LITE interface
-The VHDL code for AXI4-LITE interface are in the **AXI4_LITE.vhdl** file
-AXI4-LITE implementation was found in the website: **https://www.realdigital.org/doc/a9fee931f7a172423e1ba73f66ca4081** but more details where needed and where found in the pdf file uploaded in the same repo under the title **...**. 
-To test if the VHDL code was correct I used Vivado. I created a block design with my AXI4_LITE ram which was the slave and a ATG (AXI Trafic Generator). Clock was automated by Vivado. An image is shown below:
+
+## VHDL Code for AXI4-LITE Interface
+The VHDL code for the AXI4-LITE interface is located in the **AXI4_LITE.vhdl** file.
+
+The base AXI4-LITE implementation was sourced from [Real Digital](https://www.realdigital.org/doc/a9fee931f7a172423e1ba73f66ca4081). However, since more details were required, the official AMBA specification was also used as a reference. You can find this specification in this repository under the filename: **IHI0022E_amba_axi_and_ace_protocol_spec.pdf**. 
+
+To verify the correctness of the VHDL code, I used Vivado to create a block design. This design consists of my AXI4_LITE RAM (configured as the slave) and an AXI Traffic Generator (ATG) acting as the master. The clock was automated by Vivado. The block design is shown below:
+
 <img width="981" height="305" alt="image" src="https://github.com/user-attachments/assets/9c9b08fb-6664-4d6c-90d1-e3b19e793413" />
 
-Configuration of the ATF is really important and is explained briefly below
+The configuration of the ATG is critical to the setup and is briefly explained below.
 
-### Configuration of ATF
-Profile Selection : Custom
-Protocol : AXI4-LITE
-Mode: System Test
-My coe files are uploaded in this repo. 
-Some note about them:
-1. In the address file we add as last address : FFFFFFFF which is a NOP address. As AMD states : **The core stops generating further transactions (including the current NOP address of 0xFFFFFFFF) after the NOP address is present. You need to ensure at least one NOP address is present in the address COE file**
-2. **Lines should match exactly for every file** so you add another line of data which we dont care about in the data file.
-3. In the mask file : Mask bit value of 1 indicates the corresponding bit is used for comparing incoming read data with expected data.
-                      Mask bit value of 0 indicates the corresponding bit is not used for comparing incoming read data with expected data.
-   I filled this file with 0 because I did not care about Vivado doing the comparation
-4. Control file is the where you idicate whether you want write or read transactions, comparation details... All these and the above are explained in the AMD file :https://docs.amd.com/r/en-US/pg125-axi-traffic-gen/Operation ( the section where the control file is explained is called "Operation" )
-5. In the end, your memory should contain exactly what is written in the data file
+### Configuration of the ATG
+* **Profile Selection:** Custom
+* **Protocol:** AXI4-LITE
+* **Mode:** System Test
 
-If you perform the behavioural simulation only with the read COE files, it should look like this: 
+The COE files used for this simulation are uploaded in this repository. 
+
+#### Important Notes Regarding the COE Files:
+1. **Address COE File:** The last address in this file must be `FFFFFFFF`, which acts as a NOP (No Operation) address. As AMD states: 
+   > "The core stops generating further transactions (including the current NOP address of 0xFFFFFFFF) after the NOP address is present. You need to ensure at least one NOP address is present in the address COE file."
+2. **File Alignment:** Every COE file must have the exact same number of lines, as each line across the files maps directly to the others. Because we append `FFFFFFFF` to the address file, you must also add an extra placeholder data line in the data file (the actual value of this line does not matter).
+3. **Mask COE File:** * A mask bit value of `1` indicates that the corresponding bit is used to compare incoming read data with expected data.
+   * A mask bit value of `0` indicates that the corresponding bit is ignored during comparison.
+   * *Note: I filled this file entirely with `0`s because I did not need Vivado to perform data comparison.*
+4. **Control COE File:** This file indicates whether you want to perform write or read transactions, along with comparison configurations. These details are explained in the AMD [AXI Traffic Generator Product Guide](https://docs.amd.com/r/en-US/pg125-axi-traffic-gen/Operation) under the "Operation" section.
+5. **Memory Validation:** Ultimately, your memory should contain exactly what is written in your data COE file.
+
+> **Note:** Make sure you match the addresses written in your VHDL file to the Vivado Address Editor window.
+
+---
+
+### Simulation Results
+
+#### 1. Read-Only Simulation
+If you perform the behavioral simulation using only the **read** COE files, it should look like this: 
 <img width="1538" height="698" alt="image" src="https://github.com/user-attachments/assets/d550fdcc-6444-41c4-b1c2-1f52af63b332" />
 
-If you perform the behavioural simulation only with the read and write COE files, it should look like this: 
+#### 2. Read and Write Simulation
+If you perform the behavioral simulation using both the **read and write** COE files, it should look like this: 
 <img width="1450" height="601" alt="image" src="https://github.com/user-attachments/assets/7216946d-d547-4347-956b-ee46a15131e2" />
-<img width="1452" height="650" alt="image" src="https://github.com/user-attachments/assets/d9d03b48-4ae8-42d4-90f5-67f112dbc227" />
+<img width="1452" height="650" alt="image" src="https://github.com/user-attachments/assets/d9d03b48-4ae8-42d4-90f5-67f112dbg227" />
 
+---
 
-**Make sure yoy match the addresses that are written in the VHDL file to Vivado address window**
-#### Details for COE files
-There are 2 folders. The first folder contains COE files only to test the read. The second folder contains the files to read and write. We specifically tell ATG to read,write,read,write...
+### Project Structure & Synthesis Note
+* **COE Folders:** There are 2 folders containing COE files:
+  * **Folder 1:** Contains COE files configured solely to test read transactions.
+  * **Folder 2:** Contains COE files configured to cycle through read and write operations (specifically instructing the ATG to perform: read, write, read, write...).
+* **Synthesis:** Please note that this block design is **not synthesizable** and is intended for simulation purposes only.
 
-
-
-
-
-
-
-
+When we read, we should see as a result what we initialized in the code and when we write we should see the data file's content for each address respectively.
