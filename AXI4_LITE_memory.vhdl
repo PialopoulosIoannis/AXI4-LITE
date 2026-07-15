@@ -33,7 +33,7 @@ entity axi4_lite_ram is
         s_axilt_rdata   : out   STD_LOGIC_VECTOR((NB_COL * COL_WIDTH)-1 downto 0);
         s_axilt_rresp   : out   STD_LOGIC_VECTOR(1 downto 0);
         s_axilt_rvalid  : out   STD_LOGIC;
-        s_axilt_rready  : in    STD_LOGIC;
+        s_axilt_rready  : in    STD_LOGIC
 
         
     );
