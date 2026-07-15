@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 entity axi4_lite_ram is
     generic(
@@ -35,8 +35,6 @@ entity axi4_lite_ram is
         s_axilt_rvalid  : out   STD_LOGIC;
         s_axilt_rready  : in    STD_LOGIC;
 
-        irq_trig        : out   STD_LOGIC
-
         
     );
 end axi4_lite_ram;
@@ -44,7 +42,7 @@ end axi4_lite_ram;
 architecture behavioral_arch_1_with_320bits of axi4_lite_ram is 
   
 type ram_type is array (0 to SIZE - 1) of std_logic_vector(NB_COL * COL_WIDTH - 1 downto 0);
-shared variable RAM : ram_type := (others => (others => '0'));
+signal RAM : ram_type := (others => (others => '0'));
 
 
   signal internal_arready : std_logic := '0'; -- Internal signal to track arready state
@@ -67,12 +65,11 @@ process(areset_n, aclk) --READ
         internal_arready <= '1';  
         s_axilt_rdata    <= (others => '1'); 
         s_axilt_rresp    <= (others => '1');     
-    end  if;
-
-     if rising_edge(aclk) then
-        if areset_n = '1' then
+  
+elsif rising_edge(aclk) then
+        
           if internal_arready = '1' and s_axilt_arvalid = '1' then
-             s_axilt_rdata <= RAM(conv_integer(s_axilt_araddr(ADDR_WIDTH-1 downto 2))); -- Read data from RAM
+             s_axilt_rdata <= RAM(to_integer(unsigned(s_axilt_araddr(ADDR_WIDTH-1 downto 2)))); -- Read data from RAM
              internal_arready <= '0'; 
              internal_rvalid  <= '1'; 
              s_axilt_rresp    <= "00"; -- ΟΚ response 
@@ -82,7 +79,6 @@ process(areset_n, aclk) --READ
             internal_rvalid <= '0'; 
             internal_arready <= '1';
           end if;
-      end if; 
     end if;
   end process;
 
@@ -97,11 +93,7 @@ begin
           internal_bvalid <= '0';
           s_axilt_bresp    <= (others => '1');  
 
-  end if;
-          
-   
-    if rising_edge(aclk) then
-        if areset_n = '1' then
+ elsif rising_edge(aclk) then
             if s_axilt_awvalid = '1' and internal_awready = '1' then
               temp_waddr <= s_axilt_awaddr;
               internal_awready <= '0';
@@ -117,7 +109,7 @@ begin
             if internal_data_flag = '1' and internal_address_flag = '1' then 
                 for i in 0 to NB_COL - 1 loop
                   if temp_wstrb(i) = '1' then
-                  RAM(conv_integer(temp_waddr(ADDR_WIDTH-1 downto 2)))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) := temp_wdata((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
+                  RAM(to_integer(unsigned(temp_waddr(ADDR_WIDTH-1 downto 2))))((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH) <= temp_wdata((i + 1) * COL_WIDTH - 1 downto i * COL_WIDTH);
                   end if;
                 end loop;                   
                 internal_address_flag <= '0';
@@ -131,7 +123,6 @@ begin
                 internal_awready <= '1';
                 internal_wready <= '1'; 
               end if;
-          end if;
     end if;
 
                       
